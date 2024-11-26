@@ -1,25 +1,19 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/libs/next-auth";
-import config from "@/config";
+"use client";
+
+import HeaderNav from "@/components/HeaderNav";
 import SidebarNav from "@/components/SidebarNav";
+import { useState } from "react";
 
-// This is a server-side component to ensure the user is logged in.
-// If not, it will redirect to the login page.
-// It's applied to all subpages of /dashboard in /app/dashboard/*** pages
-// You can also add custom static UI elements like a Navbar, Sidebar, Footer, etc..
-// See https://shipfa.st/docs/tutorials/private-page
-export default async function LayoutPrivate({ children }) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect(config.auth.loginUrl);
-  }
+export default function DashboardLayout({ children }) {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-base-100">
-      <SidebarNav />
-      <main className="flex-1 ml-64 p-8 pb-24">{children}</main>
+    <div className="min-h-screen bg-base-100">
+      <HeaderNav toggleSidebar={() => setIsOpen(!isOpen)} />
+      <SidebarNav isOpen={isOpen} setIsOpen={setIsOpen} />
+      <main className="p-4 lg:ml-64 pt-20 max-w-7xl mx-auto">
+        <div className="w-full max-w-[1200px] mx-auto">{children}</div>
+      </main>
     </div>
   );
 }

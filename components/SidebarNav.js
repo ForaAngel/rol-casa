@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-function SidebarNav() {
+function SidebarNav({ isOpen, setIsOpen }) {
   const pathname = usePathname();
 
   const menuItems = [
@@ -14,28 +14,62 @@ function SidebarNav() {
   ];
 
   return (
-    <div className="h-screen w-64 bg-base-200 text-base-content fixed left-0 top-0 p-4">
-      <div className="flex items-center gap-2 mb-8">
-        <span className="text-2xl">🏠</span>
-        <h1 className="text-xl font-bold">Mi Hogar</h1>
-      </div>
+    <>
+      {/* Overlay para móvil */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-      <ul className="menu menu-vertical gap-2">
-        {menuItems.map((item) => (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              className={`flex items-center gap-3 hover:bg-base-300 ${
-                pathname === item.href ? "bg-primary text-primary-content" : ""
-              }`}
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-0 left-0 z-40
+          h-full w-64 bg-base-200
+          transition-transform duration-300 ease-in-out
+          lg:translate-x-0 lg:top-16 lg:h-[calc(100vh-4rem)] lg:shadow-xl
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
+      >
+        <div className="flex flex-col h-full">
+          {/* Header del sidebar con botón de cierre */}
+          <div className="p-4 border-b lg:hidden flex justify-between items-center">
+            <h1 className="text-xl font-bold">Mi Hogar</h1>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="btn btn-ghost btn-sm px-2"
+              aria-label="Cerrar menú"
             >
-              <span className="text-xl">{item.icon}</span>
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+              ✕
+            </button>
+          </div>
+
+          {/* Navegación */}
+          <nav className="flex-1 p-4">
+            <ul className="menu menu-vertical gap-2">
+              {menuItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-3 hover:bg-base-300 ${
+                      pathname === item.href
+                        ? "bg-primary text-primary-content"
+                        : ""
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </aside>
+    </>
   );
 }
 

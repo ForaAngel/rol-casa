@@ -133,22 +133,24 @@ export default function RecetasPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header con navegación de mes */}
+      {/* Header con navegación de mes - más compacto en móvil */}
       <div className="flex flex-col gap-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">🍳 Recetas de la Semana</h1>
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h1 className="text-2xl sm:text-3xl font-bold">
+            🍳 Recetas de la Semana
+          </h1>
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
-              className="btn btn-circle btn-outline"
+              className="btn btn-circle btn-outline btn-sm sm:btn-md"
               onClick={() => handleMonthChange(-1)}
             >
               ←
             </button>
-            <h2 className="text-xl font-semibold min-w-[200px] text-center">
+            <h2 className="text-lg sm:text-xl font-semibold min-w-[150px] sm:min-w-[200px] text-center">
               {format(currentDate, "MMMM yyyy", { locale: es })}
             </h2>
             <button
-              className="btn btn-circle btn-outline"
+              className="btn btn-circle btn-outline btn-sm sm:btn-md"
               onClick={() => handleMonthChange(1)}
             >
               →
@@ -156,19 +158,19 @@ export default function RecetasPage() {
           </div>
         </div>
 
-        {/* Selector de semanas */}
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        {/* Selector de semanas - scrollable en móvil */}
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {weeksInMonth.map((week, index) => (
             <button
               key={index}
               onClick={() => setSelectedWeek(week)}
-              className={`btn btn-sm ${
+              className={`btn btn-xs sm:btn-sm whitespace-nowrap flex-shrink-0 ${
                 isSameWeek(selectedWeek, week) ? "btn-primary" : "btn-outline"
               }`}
             >
-              Semana {index + 1}
+              <span className="hidden sm:inline">Semana</span> {index + 1}
               <span className="text-xs opacity-75">
-                {format(week, "d", { locale: es })} -
+                {format(week, "d", { locale: es })}-
                 {format(addDays(week, 6), "d", { locale: es })}
               </span>
             </button>
@@ -176,8 +178,8 @@ export default function RecetasPage() {
         </div>
       </div>
 
-      {/* Grid de días */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Grid de días - ajustado para móvil */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
         {recipes?.days.map((day, dayIndex) => (
           <div
             key={dayIndex}
@@ -187,22 +189,22 @@ export default function RecetasPage() {
                 : "bg-base-300 opacity-75"
             }`}
           >
-            <div className="card-body">
-              <h3 className="card-title flex justify-between">
+            <div className="card-body p-3 sm:p-4">
+              <h3 className="card-title text-sm sm:text-base flex justify-between">
                 <span>
                   {format(new Date(day.date), "EEEE d", { locale: es })}
                 </span>
                 {!isSameMonth(new Date(day.date), currentDate) && (
-                  <span className="text-sm opacity-75">
+                  <span className="text-xs opacity-75">
                     {format(new Date(day.date), "MMM", { locale: es })}
                   </span>
                 )}
               </h3>
 
               {["desayuno", "comida", "cena"].map((mealType) => (
-                <div key={mealType} className="space-y-2">
+                <div key={mealType} className="space-y-1 sm:space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="capitalize">{mealType}</span>
+                    <span className="capitalize text-sm">{mealType}</span>
                     {!day.meals.find((m) => m.type === mealType) && (
                       <button
                         className="btn btn-ghost btn-xs"
@@ -219,20 +221,20 @@ export default function RecetasPage() {
                     .map((meal, mealIndex) => (
                       <div
                         key={mealIndex}
-                        className="bg-base-100 p-2 rounded-lg text-sm group relative"
+                        className="bg-base-100 p-2 rounded-lg text-xs sm:text-sm group relative"
                       >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p>{meal.name}</p>
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{meal.name}</p>
                             {meal.ingredients?.length > 0 && (
-                              <p className="text-xs opacity-75 mt-1">
+                              <p className="text-xs opacity-75 mt-1 truncate">
                                 {meal.ingredients.join(", ")}
                               </p>
                             )}
                           </div>
                           <button
                             onClick={() => handleEditMeal(day, meal)}
-                            className="btn btn-ghost btn-xs opacity-0 group-hover:opacity-100"
+                            className="btn btn-ghost btn-xs opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                           >
                             ✏️
                           </button>
@@ -246,10 +248,10 @@ export default function RecetasPage() {
         ))}
       </div>
 
-      {/* Modal para agregar/editar receta */}
+      {/* Modal - ajustado para móvil */}
       {(selectedMeal || editingMeal) && (
         <dialog className="modal modal-open">
-          <div className="modal-box">
+          <div className="modal-box w-11/12 max-w-lg">
             <h3 className="font-bold text-lg">
               {editingMeal ? "Editar" : "Agregar"}{" "}
               {editingMeal?.type || selectedMeal?.type} para el{" "}
@@ -271,6 +273,7 @@ export default function RecetasPage() {
                   type: editingMeal?.type || selectedMeal?.type,
                 });
               }}
+              className="mt-4 space-y-4"
             >
               <div className="form-control">
                 <label className="label">Nombre de la receta</label>
@@ -318,6 +321,16 @@ export default function RecetasPage() {
               </div>
             </form>
           </div>
+          <form method="dialog" className="modal-backdrop">
+            <button
+              onClick={() => {
+                setSelectedMeal(null);
+                setEditingMeal(null);
+              }}
+            >
+              close
+            </button>
+          </form>
         </dialog>
       )}
     </div>
