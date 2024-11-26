@@ -176,11 +176,16 @@ export default function MandadoPage() {
     }
   }
 
-  if (isLoading)
-    return <div className="loading loading-spinner loading-lg"></div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="container mx-auto p-4 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl sm:text-3xl font-bold">🛒 Lista de Mandado</h1>
         <div className="flex gap-2 w-full sm:w-auto">
@@ -202,12 +207,12 @@ export default function MandadoPage() {
       </div>
 
       {showHistory ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {lists.map((list) => (
             <div key={list._id} className="card bg-base-200">
-              <div className="card-body">
-                <h3 className="card-title">
-                  {list.name}
+              <div className="card-body p-4">
+                <h3 className="card-title text-lg flex flex-col sm:flex-row gap-2">
+                  {list.name || "Lista sin nombre"}
                   {list.completedAt && (
                     <span className="text-sm opacity-75">
                       Completada:{" "}
@@ -215,13 +220,13 @@ export default function MandadoPage() {
                     </span>
                   )}
                 </h3>
-                <div className="space-y-2">
+                <div className="space-y-2 mt-4">
                   {list.products.map((product) => (
                     <div key={product._id} className="flex items-center gap-2">
                       <input
                         type="checkbox"
                         checked={product.completed}
-                        className="checkbox"
+                        className="checkbox checkbox-sm"
                         disabled
                       />
                       <span
@@ -242,30 +247,35 @@ export default function MandadoPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
             <div className="card bg-base-200">
-              <div className="card-body p-4 sm:p-6">
-                <h2 className="card-title text-xl mb-4">Lista Actual</h2>
-                <form onSubmit={handleAddProduct} className="join w-full mb-4">
-                  <select
-                    className="select select-bordered join-item w-32"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
+              <div className="card-body p-4">
+                <div className="mb-6">
+                  <h2 className="card-title text-xl mb-4">Lista Actual</h2>
+                  <form
+                    onSubmit={handleAddProduct}
+                    className="flex flex-col gap-3"
                   >
-                    {CATEGORIES.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    className="input input-bordered join-item flex-1"
-                    placeholder="Agregar producto..."
-                    value={newProduct}
-                    onChange={(e) => setNewProduct(e.target.value)}
-                  />
-                  <button type="submit" className="btn join-item btn-primary">
-                    +
-                  </button>
-                </form>
+                    <input
+                      className="input input-bordered w-full text-lg py-6 px-4"
+                      placeholder="¿Qué necesitas comprar?"
+                      value={newProduct}
+                      onChange={(e) => setNewProduct(e.target.value)}
+                    />
+                    <select
+                      className="select select-bordered w-full"
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                      {CATEGORIES.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+                    <button type="submit" className="btn btn-primary w-full">
+                      Agregar a la lista
+                    </button>
+                  </form>
+                </div>
 
                 <div className="space-y-2">
                   {CATEGORIES.map((category) => {
@@ -290,11 +300,11 @@ export default function MandadoPage() {
                             {products.map((product) => (
                               <div
                                 key={product._id}
-                                className="flex items-center gap-2 sm:gap-4 p-2 rounded-lg hover:bg-base-200"
+                                className="flex flex-wrap sm:flex-nowrap items-center gap-2 p-2 rounded-lg hover:bg-base-200"
                               >
                                 <input
                                   type="checkbox"
-                                  className="checkbox checkbox-sm sm:checkbox-md"
+                                  className="checkbox checkbox-sm"
                                   checked={product.completed}
                                   onChange={() =>
                                     handleToggleProduct(product._id)
@@ -309,27 +319,29 @@ export default function MandadoPage() {
                                 >
                                   {product.name}
                                 </span>
-                                <input
-                                  type="number"
-                                  className="input input-bordered input-sm w-16 sm:w-20"
-                                  value={product.quantity}
-                                  onChange={(e) =>
-                                    handleUpdateQuantity(
-                                      product._id,
-                                      e.target.value
-                                    )
-                                  }
-                                  min="1"
-                                />
-                                <button
-                                  onClick={() =>
-                                    handleDeleteProduct(product._id)
-                                  }
-                                  className="btn btn-ghost btn-sm"
-                                  title="Eliminar producto"
-                                >
-                                  <span className="text-base">🗑️</span>
-                                </button>
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                  <input
+                                    type="number"
+                                    className="input input-bordered input-sm w-20"
+                                    value={product.quantity}
+                                    onChange={(e) =>
+                                      handleUpdateQuantity(
+                                        product._id,
+                                        e.target.value
+                                      )
+                                    }
+                                    min="1"
+                                  />
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteProduct(product._id)
+                                    }
+                                    className="btn btn-ghost btn-sm"
+                                    title="Eliminar producto"
+                                  >
+                                    <span className="text-base">🗑️</span>
+                                  </button>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -357,16 +369,16 @@ export default function MandadoPage() {
             <div className="card bg-base-200">
               <div className="card-body p-4">
                 <h2 className="card-title text-lg">Resumen</h2>
-                <div className="stats stats-vertical shadow">
+                <div className="stats stats-vertical shadow w-full">
                   <div className="stat py-2">
                     <div className="stat-title">Total Items</div>
-                    <div className="stat-value text-2xl sm:text-3xl">
+                    <div className="stat-value text-2xl">
                       {activeList?.products.length || 0}
                     </div>
                   </div>
                   <div className="stat py-2">
                     <div className="stat-title">Completados</div>
-                    <div className="stat-value text-2xl sm:text-3xl text-success">
+                    <div className="stat-value text-2xl text-success">
                       {activeList?.products.filter((p) => p.completed).length ||
                         0}
                     </div>
